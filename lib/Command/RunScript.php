@@ -40,7 +40,7 @@ class RunScript extends Base {
 			->addArgument('id', InputArgument::REQUIRED, 'ID of the action to be run')
 			->addOption('user', 'u', InputOption::VALUE_OPTIONAL, 'User as which the action should be run')
 			->addOption('inputs', 'i', InputOption::VALUE_OPTIONAL, 'The user inputs to be set before running the action as a JSON string')
-			->addOption('file', 'f', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The file to run the action on');
+			->addOption('file', 'f', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'File path or id of a file given to the action as input file');
 		parent::configure();
 	}
 
