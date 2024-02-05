@@ -78,7 +78,7 @@ class RunScript extends Base {
 						$output->writeln('<error>Could not find input file ' . $fileInput . ' belonging in root folder ' . $rootFolder->getPath() . ' for file action</error>');			
 						return 1;
 					}
-					$node = $nodes[0];
+					$file = $nodes[0];
 					unset($nodes);
 				} else {
 					$file = $rootFolder->get($fileInput);
