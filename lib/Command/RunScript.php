@@ -39,7 +39,7 @@ class RunScript extends Base {
 		$this->setDescription('Runs a file action')
 			->addArgument('id', InputArgument::REQUIRED, 'ID of the action to be run')
 			->addOption('user', 'u', InputOption::VALUE_OPTIONAL, 'User as which the action should be run')
-			->addOption('inputs', 'i', InputOption::VALUE_OPTIONAL, 'The user inputs to be set before running the action as a JSON string');
+			->addOption('inputs', 'i', InputOption::VALUE_OPTIONAL, 'The user inputs to be set before running the action as a JSON string')
 			->addOption('file', 'f', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The file to run the action on');
 		parent::configure();
 	}
@@ -48,7 +48,7 @@ class RunScript extends Base {
 		$scriptId = $input->getArgument('id');
 		$userId = $input->getOption('user');
 		$scriptInputsJson = $input->getOption('inputs') ?? '{}';
-		$filePaths = $input->getOption('file') ?? [];
+		$fileInputs = $input->getOption('file') ?? [];
 		
 		try {
 			$scriptInputsData = json_decode($scriptInputsJson, true, 512, JSON_THROW_ON_ERROR);
@@ -70,11 +70,21 @@ class RunScript extends Base {
 
 		$files = [];
 		$n = 1;
-		foreach ($filePaths as $filePath) {
+		foreach ($fileInputs as $fileInput) {
 			try {
-				$file = $rootFolder->get($filePath);
+				if (ctype_digit(strval($fileInput))) {
+					$nodes = $rootFolder->getById(intval($fileInput));
+					if (!isset($nodes[0])) {
+						$output->writeln('<error>Could not find input file ' . fileInput . ' belonging in root folder ' . $root->getPath() . ' for file action</error>');			
+						return 1;
+					}
+					$node = $nodes[0];
+					unset($nodes);
+				} else {
+					$file = $rootFolder->get($fileInput);
+				}
 			} catch (\Exception $e) {
-				$output->writeln('<error>Could not find input file ' . filePath . ' belonging in root folder ' . $root->getPath() . ' for file action</error>');
+				$output->writeln('<error>Could not find input file ' . fileInput . ' belonging in root folder ' . $root->getPath() . ' for file action</error>');
 				return 1;
 			}
 			$files[$n++] = $file;
