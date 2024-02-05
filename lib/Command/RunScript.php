@@ -75,7 +75,7 @@ class RunScript extends Base {
 				if (ctype_digit(strval($fileInput))) {
 					$nodes = $rootFolder->getById(intval($fileInput));
 					if (!isset($nodes[0])) {
-						$output->writeln('<error>Could not find input file ' . fileInput . ' belonging in root folder ' . $root->getPath() . ' for file action</error>');			
+						$output->writeln('<error>Could not find input file ' . $fileInput . ' belonging in root folder ' . $root->getPath() . ' for file action</error>');			
 						return 1;
 					}
 					$node = $nodes[0];
@@ -84,7 +84,7 @@ class RunScript extends Base {
 					$file = $rootFolder->get($fileInput);
 				}
 			} catch (\Exception $e) {
-				$output->writeln('<error>Could not find input file ' . fileInput . ' belonging in root folder ' . $root->getPath() . ' for file action</error>');
+				$output->writeln('<error>Could not find input file ' . $fileInput . ' belonging in root folder ' . $root->getPath() . ' for file action</error>');
 				return 1;
 			}
 			$files[$n++] = $file;
