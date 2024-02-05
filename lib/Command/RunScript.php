@@ -71,23 +71,26 @@ class RunScript extends Base {
 		$files = [];
 		$n = 1;
 		foreach ($fileInputs as $fileInput) {
-			try {
-				if (ctype_digit(strval($fileInput))) {
-					$nodes = $rootFolder->getById(intval($fileInput));
-					if (!isset($nodes[0])) {
-						$output->writeln('<error>Could not find input file ' . $fileInput . ' belonging in root folder ' . $rootFolder->getPath() . ' for file action</error>');			
-						return 1;
+			if (isset($fileInput))
+			{
+				try {
+					if (ctype_digit(strval($fileInput))) {
+						$nodes = $rootFolder->getById(intval($fileInput));
+						if (!isset($nodes[0])) {
+							$output->writeln('<error>Could not find input file ' . $fileInput . ' belonging in root folder ' . $rootFolder->getPath() . ' for file action</error>');			
+							return 1;
+						}
+						$file = $nodes[0];
+						unset($nodes);
+					} else {
+						$file = $rootFolder->get($fileInput);
 					}
-					$file = $nodes[0];
-					unset($nodes);
-				} else {
-					$file = $rootFolder->get($fileInput);
+				} catch (\Exception $e) {
+					$output->writeln('<error>Could not find input file ' . $fileInput . ' belonging in root folder ' . $rootFolder->getPath() . ' for file action</error>');
+					return 1;
 				}
-			} catch (\Exception $e) {
-				$output->writeln('<error>Could not find input file ' . $fileInput . ' belonging in root folder ' . $rootFolder->getPath() . ' for file action</error>');
-				return 1;
+				$files[$n++] = $file;
 			}
-			$files[$n++] = $file;
 		}
 
 		$context = new Context(
