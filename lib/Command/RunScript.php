@@ -40,6 +40,7 @@ class RunScript extends Base {
 			->addArgument('id', InputArgument::REQUIRED, 'ID of the action to be run')
 			->addOption('user', 'u', InputOption::VALUE_OPTIONAL, 'User as which the action should be run')
 			->addOption('inputs', 'i', InputOption::VALUE_OPTIONAL, 'The user inputs to be set before running the action as a JSON string');
+			->addOption('file', 'f', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The file to run the action on');
 		parent::configure();
 	}
 
@@ -47,6 +48,8 @@ class RunScript extends Base {
 		$scriptId = $input->getArgument('id');
 		$userId = $input->getOption('user');
 		$scriptInputsJson = $input->getOption('inputs') ?? '{}';
+		$filePaths = $input->getOption('file') ?? [];
+		
 		try {
 			$scriptInputsData = json_decode($scriptInputsJson, true, 512, JSON_THROW_ON_ERROR);
 		} catch (\JsonException $err) {
@@ -64,11 +67,24 @@ class RunScript extends Base {
 		}
 
 		$rootFolder = $this->rootFolder->getUserFolder($userId);
+
+		$files = [];
+		$n = 1;
+		foreach ($filePaths as $filePath) {
+			try {
+				$file = $rootFolder->get($filePath);
+			} catch (\Exception $e) {
+				$output->writeln('<error>Could not find input file ' . filePath . ' belonging in root folder ' . $root->getPath() . ' for file action</error>');
+				return 1;
+			}
+			$files[$n++] = $file;
+		}
+
 		$context = new Context(
 			$this->luaProvider->createLua(),
 			$rootFolder,
 			$scriptInputs,
-			[]
+			$files
 		);
 
 		$this->scriptService->runScript($script, $context);
